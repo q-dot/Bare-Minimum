@@ -6,13 +6,6 @@ import GoogleApiKey from './GoogleApiKey.js';
 import scriptLoader from 'react-async-script-loader';
 import PlacesOfInterestList from './PlacesOfInterestList.jsx';
 
-// import GeneralMarker from "./Markers/GeneralMarker.jsx";
-// import {
-//   GeneralMarkerStyle,
-//   GeneralMarkerHoverStyle
-// } from "./Markers/GeneralMarker.jsx";
-// import InputBoxForMap from "./InputBoxForMap.jsx";
-
 let searchedPlace = {};
 let mapStateToProps = state => {
   return { trip: state.trip, user: state.user };
@@ -25,7 +18,7 @@ class TripMap extends React.Component {
     this.addPlaceInfoToList = this.addPlaceInfoToList.bind(this);
     this.removePlaceFromList = this.removePlaceFromList.bind(this);
     this.savePlaceInfo = this.savePlaceInfo.bind(this);
-    // this.loadSavedPlaces = this.loadSavedPlaces.bind(this);
+    this.saveColor = this.saveColor.bind(this);
     this.state = {
       newMarker: false,
       places: []
@@ -35,13 +28,29 @@ class TripMap extends React.Component {
   componentWillReceiveProps({ isScriptLoadSucceed }) {
     let self = this;
     if (isScriptLoadSucceed) {
+
+      function createMarker(p) {
+        let marker = new google.maps.Marker({
+          map: self.map,
+          position: new google.maps.LatLng(p.lat, p.lng)
+        })
+        let infowindow = new google.maps.InfoWindow({
+          content: p.name
+        })
+        marker.addListener('click', () => {
+          infowindow.open(self.map, marker);
+        })
+      }
+
       $.ajax({
         method: 'GET',
         url: `${HOSTNAME}/placesofinterest?tripId=${this.props.trip.id}`,
         success: (data) => {
           console.log('this was a successful get request', data);
-          
-          //get geoLocation
+          this.setState({
+            places: data
+          });
+
           let geoCoder = new google.maps.Geocoder;
           geoCoder.geocode({'address': this.props.trip.location}, function(results, status) {
             if (status === google.maps.GeocoderStatus.OK) {              
@@ -59,41 +68,32 @@ class TripMap extends React.Component {
 
               self.map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchbox);
 
-              let infowindow = new google.maps.InfoWindow();
+              self.infowindow = new google.maps.InfoWindow();
               let infowindowContent = self.refs.infowindow;
-              infowindow.setContent(infowindowContent);
+              self.infowindow.setContent(infowindowContent);
 
-              // let savedInfo = new google.maps.InfoWindow();
-              // let savedInfoContent = this.refs.savedinfowindow;
-              // savedInfo.setContent(savedInfoContent);
-              let marker;
-
-              marker = new google.maps.Marker({
+              self.marker = new google.maps.Marker({
                 map: self.map
               });
 
-              marker.addListener('click', () => {
-                infowindow.open(self.map, marker);
+              self.marker.addListener('click', () => {
+                self.infowindow.open(self.map, self.marker);
               });
 
-              marker.addListener('mouseover', () => {
-                infowindow.open(self.map, marker);
+              self.marker.addListener('mouseover', () => {
+                self.infowindow.open(self.map, self.marker);
               });
 
-              marker.addListener('mouseout', () => {
-                infowindow.open(self.map, marker);
+              self.marker.addListener('mouseout', () => {
+                self.infowindow.open(self.map, self.marker);
               });
-
 
               data.forEach((place) => {
-                marker = new google.maps.Marker({
-                  map: self.map,
-                  position: {lat: place.lat, lng: place.lng}
-                });
-              });
+                createMarker(place);
+              })
 
               AutoComplete.addListener('place_changed', () => {
-                infowindow.close();
+                self.infowindow.close();
                 let place = AutoComplete.getPlace();
                 if (!place.geometry) {
                   return;
@@ -107,11 +107,11 @@ class TripMap extends React.Component {
                 }
 
                 // Set the position of the marker using the place ID and location
-                marker.setPlace({
+                self.marker.setPlace({
                   placeId: place.place_id,
                   location: place.geometry.location
                 });
-                marker.setVisible(true);
+                self.marker.setVisible(true);
 
                 infowindowContent.children['place-name'].textContent = place.name;
                 // infowindowContent.children['place-id'].textContent = place.place_id;
@@ -119,7 +119,7 @@ class TripMap extends React.Component {
                 infowindowContent.children['place-phone'].textContent = place.formatted_phone_number;
                 infowindowContent.children['place-website'].textContent = place.website;
                 self.getPlaceInfo(place);
-                infowindow.open(self.map, marker);
+                self.infowindow.open(self.map, self.marker);
               });  
             } else {
               console.log('Geocode was not successful for the following reason: ' + status);
@@ -134,13 +134,6 @@ class TripMap extends React.Component {
 
       });
 
-      // createMarker(place) {
-      //   let placeLoc = place.geometry.location;
-      //   let marker = new google.maps.Marker({
-      //     map: this.map,
-      //     position: place.geometry.location
-      //   })
-      // }
     } // end of if statement
   } // end of componentwillreceiveprops
 
@@ -181,6 +174,10 @@ class TripMap extends React.Component {
       }
 
     });
+  }
+
+  saveColor(color) {
+    //need to put a PUT request here
   }
 
   savePlaceInfo(event) {
@@ -249,6 +246,7 @@ class TripMap extends React.Component {
           places={this.state.places}
           removePlaceFromList={this.removePlaceFromList}
           savePlaceInfo={this.savePlaceInfo}
+          saveColor={this.props.saveColor}
         />
       </div>
     );

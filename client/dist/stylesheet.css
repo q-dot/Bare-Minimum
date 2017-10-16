@@ -147,12 +147,105 @@ h5 {
 .save-entry {
   float: right;
   font-size: 14px;
-  color: #6f6f6f;
+  color: #59C5E0;
   display: inline-block;
   padding: 2px 5px;
   margin-top: 5px;
   margin-right: -20px;
 }
+
+.color-code-circle {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  background-color: #6d6d6d;
+  display: inline-block;
+  position: relative;
+  margin-right: 10px;
+  margin-left: -10px;
+  margin-top: 3px;
+}
+
+.color-dropdown {
+  display:none;
+}
+
+.color-code-circle:hover {
+  opacity: 0.5;
+}
+
+.dropdown-color-selector > .dropdown-menu {
+  top: 80%;
+  left: -7px;
+  padding: 4px;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+.dropdown-color-selector > .dropdown-menu > li {
+  display: block;
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin: 2px;
+}
+
+.dropdown-color-selector > .dropdown-menu > li > .color-btn {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  position: relative;
+  -webkit-transition: all ease 0.1s;
+  transition: all ease 0.1s;
+}
+
+.dropdown-color-selector > .dropdown-menu > li > .color-btn:hover {
+  text-decoration: none;
+  opacity: 0.8;
+  filter: alpha(opacity = 80);
+  -webkit-transform: scale(1.08);
+  -ms-transform: scale(1.08);
+  transform: scale(1.08);
+}
+
+.dropdown-color-selector > .dropdown-menu > li > .color-btn.selected:after {
+  content: "*";
+  display: inline-block;
+  font-size: 11px;
+  color: #FFF;
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  line-height: 20px;
+}
+
+.dropdown-menu .dropdown-caret:before {
+  border-bottom: 7px solid rgba(0, 0, 0, 0.2);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  content: "";
+  display: inline-block;
+  left: 9px;
+  position: absolute;
+  top: -7px;
+}
+
+.dropdown-menu .dropdown-caret:after {
+  border-bottom: 6px solid #FFFFFF;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  content: "";
+  display: inline-block;
+  left: 10px;
+  position: absolute;
+  top: -6px;
+}
+
+/*MAP*/
 
 .trip-map-container .g-map {
   height: 100%;
@@ -604,6 +697,56 @@ td {
   overflow-y:scroll; 
 }
 
+.trip-buttons-container {
+  margin: 0 auto;
+  padding-top: 10px;
+  padding-bottom: 40px;
+  margin-left: -20px;
+  text-align: center;
+}
+
+.trip-buttons-container a:not([href]):not([tabindex]) {
+  color: #41bbdf;
+  text-transform: uppercase;
+}
+
+.trip-buttons-container a {
+  margin: 0px 10px;
+  padding: 10px 10px;
+  position: relative;
+  z-index: 0;
+  cursor: pointer;
+  color: #7ad0e6;
+}
+
+.trip-buttons-container a:before,
+.trip-buttons-container a:after {
+  position: absolute;
+  left: 0px;
+  width: 100%;
+  height: 2px;
+  background: #2bc3d8;
+  content: '';
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.trip-buttons-container a:before {
+  top: 0px;
+  transform: translateY(10px);
+}
+
+.trip-buttons-container a:after {
+  bottom: 0px;
+  transform: translateY(-10px);
+}
+
+.trip-buttons-container a:hover:before,
+.trip-buttons-container a:hover:after {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
 .modal-style {
   margin-left: 15px;
 }
@@ -616,3 +759,4 @@ td {
     text-align: center;
     display: block;
 }
+
